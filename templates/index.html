@@ -1,0 +1,113 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VinoSVM — Wine Quality Prediction</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="brand"><span class="brand-mark">V</span><span>Vino<span class="muted">SVM</span></span></div>
+    <div class="nav-links">
+      <a href="#predict">Predict</a><a href="#method">How it works</a><a href="#metrics">Model</a>
+    </div>
+    <a class="nav-cta" href="#predict">Try prediction →</a>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="dot"></span> MACHINE LEARNING • SUPPORT VECTOR MACHINE</div>
+        <h1>Read the chemistry.<br><em>Predict the quality.</em></h1>
+        <p>Explore how physicochemical properties can be transformed into a wine-quality prediction with an RBF Support Vector Machine.</p>
+        <div class="hero-actions">
+          <a class="primary-btn" href="#predict">Start predicting <span>↗</span></a>
+          <a class="text-btn" href="#method">Explore the method ↓</a>
+        </div>
+        <div class="trust-row">
+          <span>11 chemical features</span><i></i><span>RBF kernel</span><i></i><span>Standardized inputs</span>
+        </div>
+      </div>
+      <div class="hero-art">
+        <div class="glow"></div>
+        <div class="wine-card">
+          <div class="bottle">
+            <div class="bottle-neck"></div><div class="bottle-body"></div><div class="label">
+              <small>VINO</small><strong>QUALITY</strong><span>ML · 2026</span>
+            </div>
+          </div>
+          <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="predict">
+      <div class="section-heading">
+        <div><div class="eyebrow">01 / PREDICTION LAB</div><h2>Enter wine chemistry</h2></div>
+        <span class="status {{ 'ready' if ready else 'offline' }}"><b></b>{{ 'SVM model ready' if ready else 'Dataset required' }}</span>
+      </div>
+
+      <div class="predict-layout">
+        <form id="predictForm" class="panel form-panel">
+          <div class="panel-top"><div><strong>Physicochemical properties</strong><span>Adjust the values below</span></div><button type="button" id="resetBtn" class="reset">Reset</button></div>
+          <div class="field-grid">
+            {% for name, value in defaults.items() %}
+            <label class="field">
+              <span>{{ name.title() }}</span>
+              <input name="{{ name }}" type="number" step="any" value="{{ value }}" required>
+            </label>
+            {% endfor %}
+          </div>
+          <button class="predict-btn" type="submit">Predict wine quality <span>→</span></button>
+        </form>
+
+        <aside class="panel result-panel">
+          <div class="result-label">PREDICTION RESULT</div>
+          <div id="resultEmpty" class="result-empty"><div class="ring">?</div><h3>Awaiting a sample</h3><p>Enter the wine's chemical properties and run the SVM model.</p></div>
+          <div id="resultValue" class="result-value hidden">
+            <div class="score"><span id="quality">—</span><small>/ 10</small></div>
+            <div id="qualityLabel" class="quality-label">—</div>
+            <div class="meter"><span id="meterFill"></span></div>
+            <p id="resultText">The SVM has classified this sample.</p>
+          </div>
+          <div class="result-note">Prediction is based on the trained dataset and model configuration in <code>app.py</code>.</div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section method" id="method">
+      <div class="eyebrow">02 / WORKFLOW</div><h2>From chemistry to classification</h2>
+      <div class="steps">
+        <div class="step"><span>01</span><h3>Collect</h3><p>Wine samples provide acidity, sugar, sulfur dioxide, density, pH, sulphates and alcohol measurements.</p></div>
+        <div class="step"><span>02</span><h3>Prepare</h3><p>Missing values and duplicate records are handled, then the 11 input features are standardized.</p></div>
+        <div class="step"><span>03</span><h3>Train SVM</h3><p>An RBF-kernel Support Vector Classifier learns boundaries between wine-quality scores.</p></div>
+        <div class="step"><span>04</span><h3>Predict</h3><p>A new sample is transformed with the same scaler and classified into a quality score.</p></div>
+      </div>
+    </section>
+
+    <section class="section metrics" id="metrics">
+      <div class="section-heading"><div><div class="eyebrow">03 / MODEL SNAPSHOT</div><h2>Performance at a glance</h2></div><span class="pill">SVC · RBF</span></div>
+      <div class="metric-grid">
+        <div class="metric"><span>Accuracy</span><strong>{{ metrics.get('accuracy','—') }}{% if metrics %}%{% endif %}</strong><small>held-out test set</small></div>
+        <div class="metric"><span>Precision</span><strong>{{ metrics.get('precision','—') }}{% if metrics %}%{% endif %}</strong><small>weighted average</small></div>
+        <div class="metric"><span>Recall</span><strong>{{ metrics.get('recall','—') }}{% if metrics %}%{% endif %}</strong><small>weighted average</small></div>
+        <div class="metric"><span>F1 score</span><strong>{{ metrics.get('f1','—') }}{% if metrics %}%{% endif %}</strong><small>weighted average</small></div>
+      </div>
+      <div class="feature-strip"><span>Dataset rows <b>{{ metrics.get('samples','—') }}</b></span><span>Input features <b>11</b></span><span>Kernel <b>RBF</b></span><span>Model <b>Support Vector Classifier</b></span></div>
+    </section>
+
+    <section class="section insight">
+      <div class="quote-mark">“</div>
+      <div><div class="eyebrow">PROJECT INSIGHT</div><blockquote>Alcohol shows a positive relationship with wine quality, while volatile acidity and density show negative relationships in the exploratory analysis.</blockquote><p>These relationships motivate feature-based machine learning for automated, quantitative assessment.</p></div>
+    </section>
+  </main>
+
+  <footer><div class="brand"><span class="brand-mark">V</span><span>Vino<span class="muted">SVM</span></span></div><span>Wine Quality Prediction • SVM Machine Learning Project</span><span>Built with Python · Flask · scikit-learn</span></footer>
+  <script src="/static/app.js"></script>
+</body>
+</html>

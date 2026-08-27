@@ -1,0 +1,1 @@
+Place the Wine Quality CSV here as data/winequality-red.csv. The application expects the standard UCI/Kaggle-style red wine dataset with semicolon-separated columns.
